@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Tu Vi Viet</string>
+    <string name="title_activity_main">Tu Vi Viet</string>
+    <string name="package_name">com.tuviviet.app</string>
+    <string name="custom_url_scheme">com.tuviviet.app</string>
+</resources>

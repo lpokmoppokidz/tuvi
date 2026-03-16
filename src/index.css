@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cinzel Decorative", "Playfair Display", serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-cosmic-navy: #050510;
+  --color-cosmic-purple: #1a1a3a;
+  --color-mystic-violet: #8b5cf6;
+  --color-celestial-gold: #d4af37;
+  --color-star-white: #f8fafc;
+  
+  --color-primary: var(--primary);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+}
+
+:root {
+  --primary: #8b5cf6;
+  --bg: #050510;
+  --surface: rgba(26, 26, 58, 0.4);
+  --card: rgba(30, 30, 60, 0.6);
+  --text: #f8fafc;
+  --text-secondary: #94a3b8;
+  --gold: #d4af37;
+  --border-gold: rgba(212, 175, 55, 0.2);
+  --glow-violet: rgba(139, 92, 246, 0.3);
+}
+
+@layer utilities {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    border: none;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  }
+
+  .gold-border {
+    position: relative;
+  }
+
+  .gold-border::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 1px solid transparent;
+    background: linear-gradient(135deg, var(--gold), transparent, var(--gold)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    opacity: 0.15; /* Reduced opacity to make it very subtle */
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(to bottom, #fde68a, #d4af37, #b45309);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .celestial-glow {
+    box-shadow: 0 0 20px var(--glow-violet), 0 0 40px rgba(139, 92, 246, 0.1);
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .star-field {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: twinkle var(--duration, 3s) infinite ease-in-out;
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+}
+
+body {
+  background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #050510 70%);
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text);
+  min-height: screen;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+h1, h2, h3, .font-display {
+  @apply font-display tracking-widest uppercase;
+}
+
+
+/* -- Performance optimization -- */
+.glass-panel {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.shimmer {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Gi?m blur trên mobile d? tránh lag */
+@media (max-width: 768px) {
+  .backdrop-blur-xl { backdrop-filter: blur(8px) !important; }
+  .backdrop-blur-md { backdrop-filter: blur(4px) !important; }
+  .backdrop-blur-3xl { backdrop-filter: blur(12px) !important; }
+}
+
+/* Gi?m glow effects trên mobile */
+@media (max-width: 768px) {
+  .blur-\[120px\] { filter: blur(60px) !important; }
+  .blur-\[100px\] { filter: blur(50px) !important; }
+  .celestial-glow { box-shadow: 0 0 15px rgba(212,175,55,0.15) !important; }
+}
+
+/* T?t animation khi user prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse,
+  .animate-spin,
+  .animate-spin-slow {
+    animation: none !important;
+  }
+}
+
