@@ -42,18 +42,7 @@
     position: relative;
   }
 
-  .gold-border::after {
-    content: "";
-    position: absolute;
-    inset: -1px;
-    border: 1px solid transparent;
-    background: linear-gradient(135deg, var(--gold), transparent, var(--gold)) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-    mask-composite: exclude;
-    opacity: 0.15; /* Reduced opacity to make it very subtle */
-  }
+  
 
   .text-gradient-gold {
     background: linear-gradient(to bottom, #fde68a, #d4af37, #b45309);
@@ -66,19 +55,8 @@
   }
 
   .shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.05) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 3s infinite linear;
-  }
-
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    background: none;
+    animation: none;
   }
 
   .star-field {
@@ -134,14 +112,14 @@ h1, h2, h3, .font-display {
   backface-visibility: hidden;
 }
 
-/* Gi?m blur tr�n mobile d? tr�nh lag */
+/* Gi?m blur tr�n mobile d? tr�nh lag */
 @media (max-width: 768px) {
   .backdrop-blur-xl { backdrop-filter: blur(8px) !important; }
   .backdrop-blur-md { backdrop-filter: blur(4px) !important; }
   .backdrop-blur-3xl { backdrop-filter: blur(12px) !important; }
 }
 
-/* Gi?m glow effects tr�n mobile */
+/* Giảm glow effects trên mobile */
 @media (max-width: 768px) {
   .blur-\[120px\] { filter: blur(60px) !important; }
   .blur-\[100px\] { filter: blur(50px) !important; }
@@ -157,3 +135,45 @@ h1, h2, h3, .font-display {
   }
 }
 
+/* ── Ẩn scrollbar toàn app ── */
+* {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / Edge */
+}
+*::-webkit-scrollbar {
+  display: none;                /* Chrome / Safari / Capacitor WebView */
+}
+
+/* ── Section 7: Mobile / Capacitor perf tweaks ── */
+
+/* Disable hover effects on touch devices — no phantom hover states */
+@media (hover: none) {
+  .group:hover .group-hover\:scale-110 { transform: none !important; }
+  button:hover { opacity: 1 !important; }
+}
+
+/* GPU-only scrolling — passive listener equivalent in CSS */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Contain layout/paint for card components — reduces repaint area */
+.glass-panel {
+  contain: layout style;
+}
+
+/* Ensure all animated elements stay on GPU layer */
+.star-field,
+.animate-spin,
+.animate-pulse,
+.animate-spin-slow {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Section 6: prevent layout shift — images always have dimensions */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}

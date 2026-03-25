@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { CungDisplay, TuViData } from "../../domain/model/types";
 import { useTuVi }          from "../hooks/useTuVi";
 import { useCungList }      from "../hooks/useCungList";
@@ -19,6 +20,7 @@ interface Props {
 export const LaSoScreen: React.FC<Props> = ({ tuViData, onTuViDataChange }) => {
   const [selectedCung, setSelectedCung] = useState<CungDisplay | null>(null);
   const [showForm, setShowForm]         = useState(false);
+  const { t } = useTranslation();
 
   const { calculate, isCalculating } = useTuVi(onTuViDataChange);
   const cungList = useCungList(tuViData);
@@ -44,15 +46,15 @@ export const LaSoScreen: React.FC<Props> = ({ tuViData, onTuViDataChange }) => {
             <Sparkles size={40} className="text-celestial-gold opacity-40" />
           </div>
           <h3 className="text-xl font-display text-star-white/80 tracking-widest mb-4 uppercase">
-            Chưa Khởi Tạo Thiên Cơ
+            {t("la_so.no_data_title")}
           </h3>
           <p className="text-xs text-white/30 font-display tracking-widest leading-relaxed mb-10 max-w-[240px]">
-            HÃY NHẬP THÔNG TIN SINH ĐỂ GIẢI MÃ LÁ SỐ TỬ VI CỦA BẠN
+            {t("la_so.no_data_desc")}
           </p>
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
             onClick={() => setShowForm(true)}
             className="px-10 py-5 rounded-full bg-celestial-gold/10 text-celestial-gold font-display text-xs tracking-[0.3em] uppercase !border-none">
-            Bắt đầu khởi tạo
+            {t("la_so.start_btn")}
           </motion.button>
         </motion.div>
       )}
@@ -61,9 +63,9 @@ export const LaSoScreen: React.FC<Props> = ({ tuViData, onTuViDataChange }) => {
 
       {tuViData && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
         >
           <TongQuanLaSo tuViData={tuViData} />
         </motion.div>

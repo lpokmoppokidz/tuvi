@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import { Message } from '../../domain/model/types';
 import { generateGeminiResponse } from '../../data/remote/gemini-api';
 
 export const AiChatScreen = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: 'Chào bạn! Tôi là AI Tử Vi. Bạn muốn giải mã thiên cơ hay xem vận hạn hôm nay?' }
+    { role: 'model', text: t('ai_chat.welcome') }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,9 +28,9 @@ export const AiChatScreen = () => {
 
     try {
       const text = await generateGeminiResponse(userMsg);
-      setMessages(prev => [...prev, { role: 'model', text: text || "Xin lỗi, tôi không thể trả lời lúc này." }]);
+      setMessages(prev => [...prev, { role: 'model', text: text || t('ai_chat.error') }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'model', text: "Có lỗi xảy ra khi kết nối với AI." }]);
+      setMessages(prev => [...prev, { role: 'model', text: t('ai_chat.error') }]);
     } finally {
       setLoading(false);
     }
@@ -39,10 +41,10 @@ export const AiChatScreen = () => {
       {/* Header AI Upgrade */}
       <div className="text-center mb-8">
         <h2 className="text-2xl font-display text-gradient-gold tracking-widest uppercase">
-          Oracle Chat
+          {t('ai_chat.title')}
         </h2>
         <p className="text-[10px] font-display text-white/30 tracking-[0.3em] uppercase mt-1">
-          Direct Cosmic Channel
+          {t('ai_chat.subtitle')}
         </p>
       </div>
 
@@ -50,9 +52,9 @@ export const AiChatScreen = () => {
         {messages.map((msg, idx) => (
           <motion.div
             key={idx}
-            initial={{ opacity: 0, x: msg.role === 'model' ? -20 : 20, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div className={`max-w-[85%] p-5 rounded-[2rem] text-sm leading-relaxed relative overflow-hidden ${
@@ -73,12 +75,9 @@ export const AiChatScreen = () => {
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={i}
-                  animate={{ 
-                    scale: [1, 1.4, 1],
-                    opacity: [0.2, 0.8, 0.2],
-                  }}
-                  transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
-                  className="w-1.5 h-1.5 bg-celestial-gold rounded-full shadow-[0_0_8px_rgba(212,175,55,0.6)]"
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.8, 0.3] }}
+                  transition={{ duration: 1, repeat: Infinity, delay: i * 0.2 }}
+                  className="w-1.5 h-1.5 bg-celestial-gold rounded-full"
                 />
               ))}
             </div>
@@ -96,7 +95,7 @@ export const AiChatScreen = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Ask the stars..."
+            placeholder={t('ai_chat.placeholder')}
             className="w-full glass-panel px-8 py-4 rounded-full outline-none transition-all text-sm text-star-white placeholder:text-white/20 relative z-10 shadow-2xl"
           />
         </div>

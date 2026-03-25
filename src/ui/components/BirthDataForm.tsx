@@ -2,6 +2,7 @@ import React, { memo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import { X, Calendar, Clock, User, Sparkles, Loader2 } from "lucide-react";
 import { birthSchema, BirthSchema } from "./form/schema";
 import { fadeIn, scaleIn, tapScale } from "../utils/motion-config";
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export const BirthDataForm: React.FC<Props> = memo(({ onClose, onSubmit }) => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -44,10 +46,10 @@ export const BirthDataForm: React.FC<Props> = memo(({ onClose, onSubmit }) => {
           <div>
             <h2 className="text-2xl font-display text-gradient-gold tracking-widest flex items-center gap-3">
               <Sparkles className="text-celestial-gold opacity-60" size={20} />
-              Thông Tin Sinh Thân
+              {t("birth_form.title")}
             </h2>
             <p className="text-[10px] font-display text-white/30 uppercase tracking-[0.3em] mt-2 ml-8">
-              Lập Lá Số Thiên Cơ
+              {t("birth_form.subtitle")}
             </p>
           </div>
           <button onClick={onClose}
@@ -60,13 +62,13 @@ export const BirthDataForm: React.FC<Props> = memo(({ onClose, onSubmit }) => {
           {/* Họ tên */}
           <div className="space-y-2">
             <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">
-              Họ và Tên
+              {t("birth_form.full_name")}
             </label>
             <div className="relative">
               <User className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={18} />
               <input
                 {...register("fullName")}
-                placeholder="Nhập danh tính của bạn"
+                placeholder={t("birth_form.full_name_placeholder")}
                 className="w-full glass-panel bg-white/5 rounded-2xl py-5 pl-14 pr-6 text-star-white font-display text-xs tracking-widest placeholder:text-white/10 outline-none !border-none shadow-xl"
               />
             </div>
@@ -76,7 +78,7 @@ export const BirthDataForm: React.FC<Props> = memo(({ onClose, onSubmit }) => {
           {/* Ngày + Giờ */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">Ngày Sinh</label>
+              <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">{t("birth_form.date")}</label>
               <div className="relative">
                 <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={18} />
                 <input type="date" {...register("birthDate")}
@@ -85,7 +87,7 @@ export const BirthDataForm: React.FC<Props> = memo(({ onClose, onSubmit }) => {
               {errors.birthDate && <p className="text-[10px] text-red-400 ml-2">{errors.birthDate.message}</p>}
             </div>
             <div className="space-y-2">
-              <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">Giờ Sinh</label>
+              <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">{t("birth_form.time")}</label>
               <div className="relative">
                 <Clock className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20" size={18} />
                 <input type="time" {...register("birthTime")}
@@ -98,27 +100,27 @@ export const BirthDataForm: React.FC<Props> = memo(({ onClose, onSubmit }) => {
           {/* Giới tính + Loại lịch */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">Giới Tính</label>
+              <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">{t("birth_form.gender")}</label>
               <div className="flex bg-white/5 p-1.5 rounded-2xl shadow-inner">
                 {(["male", "female"] as const).map((val) => (
                   <button key={val} type="button" onClick={() => setValue("gender", val)}
                     className={`flex-1 py-3 rounded-xl text-[9px] font-display uppercase tracking-widest transition-all duration-300 ${
                       gender === val ? "bg-celestial-gold/20 text-celestial-gold shadow-lg" : "text-white/20"
                     }`}>
-                    {val === "male" ? "Nam" : "Nữ"}
+                    {val === "male" ? t("birth_form.gender_male") : t("birth_form.gender_female")}
                   </button>
                 ))}
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">Loại Lịch</label>
+              <label className="text-[9px] font-display text-celestial-gold/60 uppercase tracking-[0.4em] ml-2">{t("birth_form.calendar")}</label>
               <div className="flex bg-white/5 p-1.5 rounded-2xl shadow-inner">
                 {(["solar", "lunar"] as const).map((val) => (
                   <button key={val} type="button" onClick={() => setValue("calendarType", val)}
                     className={`flex-1 py-3 rounded-xl text-[9px] font-display uppercase tracking-widest transition-all duration-300 ${
                       calendarType === val ? "bg-mystic-violet/20 text-mystic-violet shadow-lg" : "text-white/20"
                     }`}>
-                    {val === "solar" ? "Dương" : "Âm"}
+                    {val === "solar" ? t("birth_form.calendar_solar") : t("birth_form.calendar_lunar")}
                   </button>
                 ))}
               </div>
@@ -131,8 +133,8 @@ export const BirthDataForm: React.FC<Props> = memo(({ onClose, onSubmit }) => {
             className="w-full py-5 mt-2 rounded-3xl bg-celestial-gold/10 text-celestial-gold font-display tracking-[0.4em] uppercase text-xs shadow-[0_0_30px_rgba(212,175,55,0.15)] hover:bg-celestial-gold/20 transition-all flex items-center justify-center gap-4 disabled:opacity-30 !border-none"
           >
             {isSubmitting
-              ? <><Loader2 className="animate-spin" size={18} /> Đang Khởi Tạo...</>
-              : <><Sparkles size={16} /> Lập Lá Số</>}
+              ? <><Loader2 className="animate-spin" size={18} /> {t("birth_form.submitting")}</>
+              : <><Sparkles size={16} /> {t("birth_form.submit")}</>}
           </motion.button>
         </form>
       </motion.div>
