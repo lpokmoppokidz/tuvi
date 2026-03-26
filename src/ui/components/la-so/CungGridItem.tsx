@@ -14,14 +14,15 @@ export const CungGridItem: React.FC<Props> = memo(({ cung, index, onClick }) => 
     {...staggerItem(index)}
     whileTap={{ scale: 0.96 }}
     onClick={onClick}
-    className="aspect-[4/5]"
+    style={{ willChange: 'transform' }}
+    className="aspect-[4/5] transform-gpu"
   >
     <div className={`glass-panel p-2.5 rounded-2xl h-full flex flex-col justify-between cursor-pointer transition-all duration-500 relative overflow-hidden group !border-none ${
       cung.isMenh
         ? "celestial-glow bg-celestial-gold/5 ring-1 ring-celestial-gold/20 shadow-[0_0_20px_rgba(212,175,55,0.15)]"
         : "hover:bg-white/5 shadow-xl"
     }`}>
-      <div className="shimmer absolute inset-0 pointer-events-none opacity-10 group-hover:opacity-30" />
+      <div className="shimmer absolute inset-0 pointer-events-none opacity-10 group-hover:opacity-30 will-change-opacity" />
 
       <div className="flex justify-between items-start relative z-10">
         <span className={`text-[9px] font-display tracking-widest uppercase ${

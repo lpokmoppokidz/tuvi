@@ -1,4 +1,3 @@
-import { calculateTuVi } from "./TuViCalculator";
 import { CacheService } from "./CacheService";
 
 export interface TuViInput {
@@ -9,6 +8,28 @@ export interface TuViInput {
   gioi_tinh: string;
   ngay_du_doan: string;
 }
+
+// ── Web Worker Bridge — Offload heavy calculation from UI thread ───────
+const runCalculationInWorker = (input: any): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    // Vite handles this URL automatically for Web Workers
+    const worker = new Worker(new URL("./TuViWorker.ts", import.meta.url), { type: "module" });
+    
+    worker.onmessage = (e) => {
+      const { type, result, error } = e.data;
+      if (type === 'SUCCESS') resolve(result);
+      else reject(new Error(error));
+      worker.terminate();
+    };
+
+    worker.onerror = (err) => {
+      reject(new Error("Worker error: " + err.message));
+      worker.terminate();
+    };
+
+    worker.postMessage({ input });
+  });
+};
 
 // Tính ngày mai format DD/MM/YYYY
 function getTomorrow(): string {
@@ -25,7 +46,7 @@ export const TuViService = {
   async calculateAndSave(input: Omit<TuViInput, 'ngay_du_doan'>) {
     const ngay_du_doan = getTomorrow();
 
-    const result = await calculateTuVi({ ...input, ngay_du_doan });
+    const result = await runCalculationInWorker({ ...input, ngay_du_doan });
 
     // Lưu lá số (vĩnh viễn)
     CacheService.saveLaSo(result);
@@ -60,7 +81,7 @@ export const TuViService = {
 
     try {
       const ngay_du_doan = getTomorrow();
-      const newResult = await calculateTuVi({ ...birthInfo, ngay_du_doan });
+      const newResult = await runCalculationInWorker({ ...birthInfo, ngay_du_doan });
 
       // Cập nhật dự đoán mới, giữ nguyên lá số
       const updated = { ...laso, du_doan_ngay_mai: newResult.du_doan_ngay_mai };
@@ -79,7 +100,7 @@ export const TuViService = {
 // Giữ export cũ để không phá code hiện tại
 export const calculateTuViChart = async (input: TuViInput) => {
   try {
-    const result = await calculateTuVi(input);
+    const result = await runCalculationInWorker(input);
     return result;
   } catch (error: any) {
     console.error('❌ Error calculating Tu Vi chart:', error);

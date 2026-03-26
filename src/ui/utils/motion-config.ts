@@ -31,6 +31,15 @@ export const tapScale = {
   transition: { duration: 0.08 },
 };
 
+// High-performance spring for 120Hz displays - "Dính tay" feel
+export const smoothSpring = {
+  type: "spring",
+  stiffness: 400,
+  damping: 30,
+  mass: 0.8,
+  restDelta: 0.001
+};
+
 export const staggerItem = (index: number) => ({
   initial:    { opacity: 0, y: 4 },
   animate:    { opacity: 1, y: 0 },

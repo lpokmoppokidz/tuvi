@@ -36,7 +36,6 @@ export default defineConfig(({ mode }) => {
 
       rollupOptions: {
         output: {
-          // Section 3: manual chunks — vendor libs cached separately
           manualChunks: {
             'react-vendor': ['react', 'react-dom'],
             'motion':        ['motion/react'],
@@ -44,9 +43,14 @@ export default defineConfig(({ mode }) => {
             'query':         ['@tanstack/react-query'],
             'i18n':          ['react-i18next', 'i18next'],
             'icons':         ['lucide-react'],
+            'ai-vendor':     ['@google/genai'],
+            'lunar-calc':    ['lunar-javascript'],
           },
         },
       },
+      // Target ES2020 for better performance on modern mobile devices
+      cssCodeSplit: true,
+      sourcemap: false, // Disable for production to save space
     },
 
     // Section 3: esbuild drop console/debugger in prod

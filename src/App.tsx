@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, lazy, Suspense, useCallback } from "react";
+import React, { useState, useEffect, useMemo, lazy, Suspense, useCallback, useTransition } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LayoutDashboard, CalendarDays, User, Compass } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -49,6 +49,7 @@ const ScreenLoader = () => (
 export default function App() {
   const [authScreen, setAuthScreen] = useState<AuthScreen>("login");
   const [activeTab, setActiveTab]   = useState<NavItem>("laso");
+  const [isPending, startTransition] = useTransition();
   const { t } = useTranslation();
 
   // 2. Zustand — only subscribe to exact fields needed
@@ -57,15 +58,6 @@ export default function App() {
   const { isDark, toggleDark } = useUIStore(
     useShallow(state => ({ isDark: state.isDark, toggleDark: state.toggleDark }))
   );
-
-  const stars = useMemo(() =>
-    [...Array(12)].map((_, i) => ({
-      id: i,
-      top:      `${Math.random() * 100}%`,
-      left:     `${Math.random() * 100}%`,
-      duration: `${2 + Math.random() * 4}s`,
-    })),
-  []);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", isDark);
@@ -104,6 +96,12 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, tuViData, isDark]);
 
+  const handleTabChange = useCallback((tab: NavItem) => {
+    startTransition(() => {
+      setActiveTab(tab);
+    });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<ScreenLoader />}>
@@ -127,11 +125,7 @@ export default function App() {
           {authScreen === "app" && (
             <motion.div key="app" {...pageTransition}>
               <div className={`min-h-screen max-w-md mx-auto relative overflow-x-hidden ${isDark ? "luxury-glow" : "bg-bg"}`}>
-                {stars.map((star) => (
-                  <div key={star.id} className="star-field"
-                    style={{ top: star.top, left: star.left, "--duration": star.duration } as any} />
-                ))}
-                <main className="relative z-10 pt-6">
+                <main className={`relative z-10 pt-6 transition-opacity duration-300 ${isPending ? 'opacity-50' : 'opacity-100'}`}>
                   <AnimatePresence mode="wait">
                     <motion.div key={activeTab} {...pageTransition}>
                       <Suspense fallback={<ScreenLoader />}>
@@ -144,8 +138,8 @@ export default function App() {
                 <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[94%] max-w-sm z-40">
                   <div className="adaptive-card p-2 flex justify-around items-center rounded-[40px] backdrop-blur-3xl">
                     {NAV_ITEMS.map((item) => (
-                      <button key={item.id} onClick={() => setActiveTab(item.id as NavItem)}
-                        className={`relative p-4 rounded-[28px] transition-all duration-300 flex flex-col items-center gap-1 group overflow-hidden ${
+                      <button key={item.id} onClick={() => handleTabChange(item.id as NavItem)}
+                        className={`relative p-4 rounded-[28px] transition-all duration-300 flex flex-col items-center gap-1 group overflow-hidden active:scale-95 ${
                           activeTab === item.id ? "text-primary" : "text-text-secondary/40"
                         }`}>
                         {activeTab === item.id && (
@@ -154,7 +148,7 @@ export default function App() {
                             {...navActive} />
                         )}
                         <item.icon size={24} strokeWidth={activeTab === item.id ? 2.5 : 1.5}
-                          className="relative z-10" />
+                          className={`relative z-10 transition-transform ${activeTab === item.id ? 'scale-110' : 'scale-100'}`} />
                         <span className="relative z-10 text-[8px] font-black uppercase tracking-widest">
                           {t(item.labelKey)}
                         </span>
