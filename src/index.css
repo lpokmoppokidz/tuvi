@@ -1,153 +1,274 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Inter", system-ui, sans-serif;
-  --font-sans:    "Inter", system-ui, sans-serif;
+  --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Inter", "Segoe UI", system-ui, sans-serif;
 
-  --color-cosmic-navy: #050510;
-  --color-cosmic-purple: #1a1a3a;
-  --color-mystic-violet: #8b5cf6;
-  --color-celestial-gold: #d4af37;
-  --color-star-white: #f8fafc;
-  
   --color-primary: var(--primary);
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-card: var(--card);
   --color-text: var(--text);
   --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border);
+  --color-cosmic-navy: var(--cosmic-navy);
+  --color-cosmic-purple: var(--cosmic-purple);
+  --color-mystic-violet: var(--mystic-violet);
+  --color-celestial-gold: var(--celestial-gold);
+  --color-crystal-gold: var(--crystal-gold);
+  --color-star-white: var(--star-white);
+  --color-on-primary-fixed-variant: var(--on-primary-fixed-variant);
+  --color-secondary-container: var(--secondary-container);
 }
 
 :root {
-  --primary: #8b5cf6;
   --bg: #050510;
-  --surface: rgba(26, 26, 58, 0.4);
-  --card: rgba(30, 30, 60, 0.6);
+  --surface: #090914;
+  --card: #0b0b1a;
   --text: #f8fafc;
   --text-secondary: #94a3b8;
-  --gold: #d4af37;
-  --glow-violet: rgba(139, 92, 246, 0.3);
+  --border: #1a1a2e;
+  --primary: #8b5cf6;
+
+  --cosmic-navy: #050510;
+  --cosmic-purple: #1a1a3a;
+  --mystic-violet: #8b5cf6;
+  --celestial-gold: #d4af37;
+  --crystal-gold: #f0c96b;
+  --star-white: #f8fafc;
+  --on-primary-fixed-variant: #3f2d72;
+  --secondary-container: #1d2340;
+  --card-hover: #121229;
+  --gold-border: rgba(212, 175, 55, 0.22);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.24);
+  --shadow-luxury: 0 16px 36px rgba(0, 0, 0, 0.26);
+  --glow-violet: rgba(139, 92, 246, 0.14);
+  --glow-gold: rgba(212, 175, 55, 0.1);
+}
+
+@layer base {
+  html {
+    background:
+      radial-gradient(circle at top, #1a1a3a 0%, transparent 42%),
+      linear-gradient(180deg, #090914 0%, var(--bg) 60%);
+    color: var(--text);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    color: var(--text);
+    font-family: var(--font-sans);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.16), transparent 30%),
+      linear-gradient(180deg, #090914 0%, var(--bg) 60%);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    touch-action: manipulation;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  ::selection {
+    background: rgba(139, 92, 246, 0.28);
+    color: var(--star-white);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer-slide {
+  0% {
+    transform: translate3d(-130%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(130%, 0, 0);
+  }
+}
+
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(0.85);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1.15);
+  }
 }
 
 @layer utilities {
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(16px);
-    border: none;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+  .glass-panel,
+  .adaptive-card {
+    background: color-mix(in srgb, var(--card) 88%, transparent);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      opacity 0.2s ease;
+  }
+
+  .adaptive-card {
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+  }
+
+  .crystal-morph-gold {
+    background: color-mix(in srgb, var(--card) 88%, rgba(212, 175, 55, 0.08));
+    border-color: rgba(212, 175, 55, 0.18);
   }
 
   .gold-border {
-    position: relative;
+    border-color: var(--gold-border);
   }
 
-  
-
   .text-gradient-gold {
-    background: linear-gradient(to bottom, #fde68a, #d4af37, #b45309);
+    background: linear-gradient(180deg, #f7e8b0 0%, #d4af37 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
+  .text-glow-gold {
+    text-shadow: 0 0 12px rgba(212, 175, 55, 0.2);
+  }
+
   .celestial-glow {
-    box-shadow: 0 0 20px var(--glow-violet), 0 0 40px rgba(139, 92, 246, 0.1);
+    box-shadow: var(--shadow-soft), 0 0 0 1px rgba(139, 92, 246, 0.08);
+  }
+
+  .luxury-glow {
+    background:
+      radial-gradient(circle at top, rgba(139, 92, 246, 0.14), transparent 28%),
+      linear-gradient(180deg, rgba(8, 8, 18, 0.96), rgba(5, 5, 16, 1));
   }
 
   .shimmer {
-    background: none;
-    animation: none;
+    overflow: hidden;
+  }
+
+  .shimmer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 18%,
+      rgba(255, 255, 255, 0.02) 44%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0.02) 56%,
+      transparent 82%
+    );
+    animation: shimmer-slide 4.5s linear infinite;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 14s linear infinite;
+  }
+
+  .star-field {
+    width: 4px;
+    height: 4px;
+    border-radius: 9999px;
+    background: rgba(248, 250, 252, 0.82);
+    box-shadow: 0 0 10px rgba(248, 250, 252, 0.35);
+    animation: star-twinkle 3.4s ease-in-out infinite;
+  }
+
+  .smooth {
+    transition: all 0.25s ease;
   }
 }
 
-body {
-  font-family: var(--font-sans);
-  background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #050510 70%);
-  position: relative;
-  overflow-x: hidden;
-  color: var(--text);
-  min-height: screen;
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-  /* Loại bỏ độ trễ 300ms trên mobile */
-  touch-action: manipulation;
+@media (hover: none) {
+  .group:hover .group-hover\:scale-110 {
+    transform: none !important;
+  }
+
+  button:hover {
+    opacity: 1 !important;
+  }
 }
 
-/* ... existing before code ... */
-
-/* -- Performance optimization -- */
-.glass-panel, .adaptive-card {
-  will-change: transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-.shimmer {
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-/* Gi?m blur tr�n mobile d? tr�nh lag */
 @media (max-width: 768px) {
-  .backdrop-blur-xl { backdrop-filter: blur(8px) !important; }
-  .backdrop-blur-md { backdrop-filter: blur(4px) !important; }
-  .backdrop-blur-3xl { backdrop-filter: blur(12px) !important; }
+  .glass-panel,
+  .adaptive-card {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .celestial-glow {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .blur-\[120px\] {
+    filter: blur(52px) !important;
+  }
+
+  .blur-\[100px\] {
+    filter: blur(44px) !important;
+  }
 }
 
-/* Giảm glow effects trên mobile */
-@media (max-width: 768px) {
-  .blur-\[120px\] { filter: blur(60px) !important; }
-  .blur-\[100px\] { filter: blur(50px) !important; }
-  .celestial-glow { box-shadow: 0 0 15px rgba(212,175,55,0.15) !important; }
-}
-
-/* T?t animation khi user prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+
   .animate-pulse,
   .animate-spin,
-  .animate-spin-slow {
+  .animate-spin-slow,
+  .shimmer::before,
+  .star-field {
     animation: none !important;
   }
-}
-
-/* ── Ẩn scrollbar toàn app ── */
-* {
-  scrollbar-width: none;        /* Firefox */
-  -ms-overflow-style: none;     /* IE / Edge */
-}
-*::-webkit-scrollbar {
-  display: none;                /* Chrome / Safari / Capacitor WebView */
-}
-
-/* ── Section 7: Mobile / Capacitor perf tweaks ── */
-
-/* Disable hover effects on touch devices — no phantom hover states */
-@media (hover: none) {
-  .group:hover .group-hover\:scale-110 { transform: none !important; }
-  button:hover { opacity: 1 !important; }
-}
-
-/* GPU-only scrolling — passive listener equivalent in CSS */
-* {
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Contain layout/paint for card components — reduces repaint area */
-.glass-panel {
-  contain: layout style;
-}
-
-/* Ensure all animated elements stay on GPU layer */
-.animate-spin,
-.animate-pulse,
-.animate-spin-slow {
-  will-change: transform, opacity;
-  transform: translateZ(0);
-}
-
-/* Section 6: prevent layout shift — images always have dimensions */
-img {
-  display: block;
-  max-width: 100%;
-  height: auto;
 }

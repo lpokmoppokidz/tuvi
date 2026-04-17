@@ -1,0 +1,13 @@
+Trước khi viết hoặc sửa code trong repo này:
+
+- Đọc `AGENTS.md`.
+- Đọc `docs/06-workflow/TASK.md`.
+- Đọc `docs/06-workflow/session-log.md`.
+
+Ràng buộc của dự án:
+
+- Stack hiện tại là `React 19 + Vite + TypeScript + Capacitor 8`.
+- Không giả định dự án dùng Next.js.
+- Dùng `npm` cho repo này. Không tự ý chuyển sang `pnpm` hoặc `yarn`.
+- Chỉ làm việc trong phạm vi các file được nêu trong `docs/06-workflow/TASK.md` nếu không có blocker trực tiếp.
+- Khi xử lý xong lỗi compile/type/logic, cập nhật ngắn gọn vào `docs/06-workflow/session-log.md`.

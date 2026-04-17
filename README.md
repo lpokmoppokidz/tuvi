@@ -8,6 +8,23 @@ This contains everything you need to run your app locally.
 
 View your app in AI Studio: https://ai.studio/apps/271c9074-4cc0-4647-9a14-6021a1d288df
 
+## Project layout
+
+```text
+.
+├── src/                  # Application source
+├── android/              # Capacitor Android project
+├── docs/                 # Technical docs by topic
+│   └── 06-workflow/      # Agent/task workflow notes
+├── scripts/              # Utility scripts and one-off helpers
+├── AGENTS.md             # Root agent conventions
+├── CLAUDE.md             # Claude-specific conventions
+├── GEMINI.md             # Gemini-specific conventions
+├── server.ts             # Local Express server
+├── vite.config.ts        # Vite config
+└── capacitor.config.ts   # Capacitor config
+```
+
 ## Run Locally
 
 **Prerequisites:**  Node.js

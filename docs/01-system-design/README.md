@@ -1,6 +1,7 @@
 # 01 — Architecture & System Design
 
 > Cross-reference: See [03-frontend](../03-frontend/README.md) for component details, [02-backend](../02-backend/README.md) for API layer details.
+> GitNexus workflow: See [gitnexus-vibe-coding.md](./gitnexus-vibe-coding.md) for the repo-specific cheat sheet used to navigate this codebase quickly.
 
 ---
 

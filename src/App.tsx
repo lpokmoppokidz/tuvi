@@ -7,16 +7,16 @@ import { useShallow } from "zustand/react/shallow";
 import type { NavItem } from "./domain/model/types";
 import { useTuViStore } from "./store/useTuViStore";
 import { useUIStore }   from "./store/useUIStore";
-import { pageTransition, navActive } from "./ui/utils/motion-config";
+import { pageTransition, navActive } from "./ui/shared/utils/motion-config";
 
 // 3. Lazy load screens — only bundle what's needed on first paint
-const LaSoScreen    = lazy(() => import("./ui/screens/LaSoScreen").then(m => ({ default: m.LaSoScreen })));
-const VanHanScreen  = lazy(() => import("./ui/screens/VanHanScreen").then(m => ({ default: m.VanHanScreen })));
-const NgayMaiScreen = lazy(() => import("./ui/screens/NgayMaiScreen").then(m => ({ default: m.NgayMaiScreen })));
-const AiChatScreen  = lazy(() => import("./ui/screens/AiChatScreen").then(m => ({ default: m.AiChatScreen })));
-const ProfileScreen = lazy(() => import("./ui/screens/ProfileScreen").then(m => ({ default: m.ProfileScreen })));
-const LoginScreen   = lazy(() => import("./ui/screens/LoginScreen").then(m => ({ default: m.LoginScreen })));
-const RegisterScreen= lazy(() => import("./ui/screens/RegisterScreen").then(m => ({ default: m.RegisterScreen })));
+const LaSoScreen    = lazy(() => import("./ui/features/la-so/LaSoScreen").then(m => ({ default: m.LaSoScreen })));
+const VanHanScreen  = lazy(() => import("./ui/features/van-han/VanHanScreen").then(m => ({ default: m.VanHanScreen })));
+const NgayMaiScreen = lazy(() => import("./ui/features/ngay-mai/NgayMaiScreen").then(m => ({ default: m.NgayMaiScreen })));
+const AiChatScreen  = lazy(() => import("./ui/features/ai-chat/AiChatScreen").then(m => ({ default: m.AiChatScreen })));
+const ProfileScreen = lazy(() => import("./ui/features/profile/ProfileScreen").then(m => ({ default: m.ProfileScreen })));
+const LoginScreen   = lazy(() => import("./ui/features/auth/LoginScreen").then(m => ({ default: m.LoginScreen })));
+const RegisterScreen= lazy(() => import("./ui/features/auth/RegisterScreen").then(m => ({ default: m.RegisterScreen })));
 
 type AuthScreen = "login" | "register" | "app";
 
