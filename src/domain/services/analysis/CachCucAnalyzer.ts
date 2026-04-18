@@ -1,4 +1,4 @@
-import type { NamTongCung, NamTongLaSo, NamTongStar } from "../model/types";
+import type { NamTongCung, NamTongLaSo, NamTongStar } from "../../model/types";
 
 export interface CachCucDef {
   id: string;

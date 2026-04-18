@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import { ArrowLeft, Award, AlertTriangle, Crosshair } from "lucide-react";
 import type { NamTongLaSo } from "@/domain/model/types";
-import { analyzeCachCuc } from "@/domain/services/CachCucAnalyzer";
+import { analyzeCachCuc } from "@/domain/services/analysis/CachCucAnalyzer";
 import { slideUpFull } from "@/ui/shared/utils/motion-config";
 
 interface Props {

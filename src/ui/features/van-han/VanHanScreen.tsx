@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Star } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "react-i18next";
-import type { NamTongLaSo as TuViData } from "@/domain/model/types";
+import type { NamTongLaSo } from "@/domain/model/types";
 import { DaiHanCard } from "@/ui/features/van-han/components/DaiHanCard";
 import { TabSwitcher } from "@/ui/features/van-han/components/TabSwitcher";
 import { TieuHanCard } from "@/ui/features/van-han/components/TieuHanCard";
@@ -12,7 +12,7 @@ import { EmptyState } from "@/ui/shared/components/EmptyState";
 import { ScreenHeader } from "@/ui/shared/components/ScreenHeader";
 
 interface VanHanScreenProps {
-  tuViData?: TuViData | null;
+  tuViData?: NamTongLaSo | null;
 }
 
 export const VanHanScreen = ({ tuViData }: VanHanScreenProps) => {

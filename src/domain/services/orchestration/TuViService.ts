@@ -1,4 +1,4 @@
-import { CacheService } from "./CacheService";
+import { CacheService } from "../cache/CacheService";
 
 export interface TuViInput {
   ho_ten: string;
@@ -11,7 +11,7 @@ export interface TuViInput {
 // ── Web Worker Bridge ──────────────────────────────────────────────────────────
 const runCalculationInWorker = (input: any): Promise<any> => {
   return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL("./TuViWorker.ts", import.meta.url), { type: "module" });
+    const worker = new Worker(new URL("../workers/TuViWorker.ts", import.meta.url), { type: "module" });
     worker.onmessage = (e) => {
       const { type, result, error } = e.data;
       if (type === "SUCCESS") resolve(result);

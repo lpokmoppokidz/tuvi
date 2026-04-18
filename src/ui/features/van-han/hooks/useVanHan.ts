@@ -1,7 +1,7 @@
 import { useMemo } from "react";
-import type { TuViData } from "@/domain/model/types";
+import type { NamTongLaSo } from "@/domain/model/types";
 
-export const useVanHan = (tuViData: TuViData | null) => {
+export const useVanHan = (tuViData: NamTongLaSo | null) => {
   return useMemo(() => {
     const vanHan = tuViData?.van_han;
     if (!vanHan) return null;

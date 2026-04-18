@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import type { NamTongLaSo } from "@/domain/model/types";
-import { TuViService } from "@/domain/services/TuViService";
+import { TuViService } from "@/domain/services/orchestration/TuViService";
 
 interface BirthFormData {
   fullName: string;

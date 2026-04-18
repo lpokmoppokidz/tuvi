@@ -115,4 +115,10 @@
   - **Star count**: 85 → 107 fixed stars placed (all 107/107 from `docs/data.json` excluding 9 Lưu stars, 4 Tứ Hóa props, 2 Không Vong flags).
 - New file: `src/data/constants/ui/tuvi-data.ts` — typed `TUVI_DATA` constant (`as const`).
 - Updated: `src/data/constants/index.ts` — re-exports `tuvi-data`.
-- Verify: `npm.cmd run lint` → only pre-existing `VanHanScreen.tsx` error.
+- Task: Fix missing moving stars (Lưu Sao) and UI/types mismatch for VanHan calculation.
+- Changes:
+  - Added 9 moving stars (`sao_luu_9`) to `src/data/constants/phu-tinh.ts` groups, order array, and meta configurations.
+  - Implemented 9 moving stars calculation logic in `NamTongCalculator.ts` under section 24 (`luuSaoArray`).
+  - Adjusted `NamTongLaSo` interface to export `luuSao` array and `van_han` prop for compatibility.
+  - Refactored `VanHanScreen.tsx` and `useVanHan.ts` to use `NamTongLaSo` instead of the legacy `TuViData` interface.
+- Verification: `npm.cmd run lint` passed (0 errors).

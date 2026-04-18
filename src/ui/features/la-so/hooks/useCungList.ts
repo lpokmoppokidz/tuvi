@@ -6,7 +6,7 @@ import {
   getDiaChiHanh,
   PALACE_NAME_MAP,
 } from "@/ui/features/la-so/components/palaceMeta";
-import { CUC_LABEL } from "@/domain/services/NamTongCalculator";
+import { CUC_LABEL } from "@/domain/services/calculators/NamTongCalculator";
 
 export const useCungList = (tuViData: NamTongLaSo | null): CungDisplay[] => {
   return useMemo(() => {
@@ -50,7 +50,7 @@ export const useCungList = (tuViData: NamTongLaSo | null): CungDisplay[] => {
         .filter((s) => s.type === "chinh_tinh")
         .map((s) => s.name);
       const phuTinh = cung.stars
-        .filter((s) => s.type === "phu_tinh")
+        .filter((s) => s.type === "phu_tinh" || s.type === "sao_luu")
         .map((s) => s.name);
       const tuHoa = cung.stars
         .filter((s) => s.tuHoa)

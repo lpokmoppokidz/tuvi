@@ -8,7 +8,7 @@ export type CucType = "Thuy2" | "Moc3" | "Kim4" | "Tho5" | "Hoa6";
 
 export interface NamTongStar {
   name: string;
-  type: "chinh_tinh" | "phu_tinh";
+  type: "chinh_tinh" | "phu_tinh" | "sao_luu";
   brightness?: TrangThai;
   tuHoa?: "Hóa Lộc" | "Hóa Quyền" | "Hóa Khoa" | "Hóa Kỵ";
   isTuanKhong?: boolean;
@@ -47,6 +47,8 @@ export interface NamTongLaSo {
   thanCungIndex: number;
   tuanKhong: [number, number];
   trietLo: [number, number];
+  luuSao?: LuuSao[];
+  van_han?: any;
 }
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -1,4 +1,4 @@
-import { calculateNamTong } from "./NamTongCalculator";
+import { calculateNamTong } from "../calculators/NamTongCalculator";
 
 self.onmessage = async (e: MessageEvent) => {
   const { input } = e.data;

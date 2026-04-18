@@ -2,7 +2,7 @@
 import React, { memo } from "react";
 import { Calendar, Clock3, Loader2, Plus } from "lucide-react";
 import type { NamTongLaSo } from "@/domain/model/types";
-import { CHI, CUC_LABEL } from "@/domain/services/NamTongCalculator";
+import { CHI, CUC_LABEL } from "@/domain/services/calculators/NamTongCalculator";
 import type { OverlayMode } from "@/ui/features/la-so/components/palaceMeta";
 
 interface Props {

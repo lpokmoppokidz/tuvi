@@ -183,6 +183,18 @@ const BO_SUNG_HE_THONG_NAMES = [
   "Văn Tinh",
 ] as const;
 
+const SAO_LUU_NAMES = [
+  "Lưu Thái Tuế",
+  "Lưu Tang Môn",
+  "Lưu Bạch Hổ",
+  "Lưu Thiên Khốc",
+  "Lưu Thiên Hư",
+  "Lưu Lộc Tồn",
+  "Lưu Thiên Mã",
+  "Lưu Kình Dương",
+  "Lưu Đà La",
+] as const;
+
 export const PHU_TINH_GROUPS = {
   chinh_tinh: [...CHINH_TINH_NAMES],
   phu_tinh_trung_tinh: [...PHU_TINH_TRUNG_TINH_NAMES],
@@ -192,6 +204,7 @@ export const PHU_TINH_GROUPS = {
   than_sat: [...THAN_SAT_NAMES],
   khong_vong: [...KHONG_VONG_NAMES],
   bo_sung_he_thong: [...BO_SUNG_HE_THONG_NAMES],
+  sao_luu: [...SAO_LUU_NAMES],
 } as const;
 
 const CANONICAL_STAR_ORDER = [
@@ -203,6 +216,7 @@ const CANONICAL_STAR_ORDER = [
   ...PHU_TINH_GROUPS.than_sat,
   ...PHU_TINH_GROUPS.khong_vong,
   ...PHU_TINH_GROUPS.bo_sung_he_thong,
+  ...PHU_TINH_GROUPS.sao_luu,
 ] as const;
 
 export const PHU_TINH_ORDER = Array.from(new Set(CANONICAL_STAR_ORDER));
@@ -241,6 +255,7 @@ const HUNG_TINH_CANONICAL = [
   "Quả Tú",
   "Tuần",
   "Triệt",
+  ...SAO_LUU_NAMES.filter(name => name.includes("Khốc") || name.includes("Hư") || name.includes("Bạch Hổ") || name.includes("Tang Môn") || name.includes("Kình Dương") || name.includes("Đà La")),
 ] as const;
 
 const HUNG_TINH_ALIAS_NAMES = Object.keys(PHU_TINH_ALIASES).filter((alias) =>
@@ -269,9 +284,20 @@ function createTrangSinhMeta(name: string): PhuTinhMeta {
   );
 }
 
+function createSaoLuuMeta(name: string): PhuTinhMeta {
+  return createStarMeta(
+    "trung",
+    "Sao lưu động dùng trong xem vận hạn từng năm.",
+    `${name} là sao di chuyển theo chu kỳ năm xem hạn, mang năng lượng kích hoạt và biến động. Nó đóng vai trò như chất xúc tác làm phát sinh sự kiện dựa trên nền tảng của cung và sao cố định.`,
+    "Kích hoạt các sự kiện tích cực nếu bản chất sao hoặc cung đang thuận lợi.",
+    "Làm trầm trọng thêm vấn đề nếu hội tụ với sát tinh hoặc vào cung xấu.",
+  );
+}
+
 const GENERATED_STAR_META = Object.fromEntries([
   ...CHINH_TINH_NAMES.map((name) => defineStar(name, createChinhTinhMeta(name))),
   ...TRANG_SINH_NAMES.map((name) => defineStar(name, createTrangSinhMeta(name))),
+  ...SAO_LUU_NAMES.map((name) => defineStar(name, createSaoLuuMeta(name))),
   defineStar(
     "Hóa Lộc",
     createStarMeta(

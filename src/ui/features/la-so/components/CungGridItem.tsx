@@ -60,7 +60,7 @@ export const CungGridItem: React.FC<Props> = memo(
 
     const stars: NamTongStar[] = (cung.stars as NamTongStar[]) ?? [];
     const chinhTinhStars = stars.filter((star) => star.type === "chinh_tinh");
-    const phuTinhStars = stars.filter((star) => star.type === "phu_tinh");
+    const phuTinhStars = stars.filter((star) => star.type === "phu_tinh" || star.type === "sao_luu");
 
     const chinhTinhNames =
       chinhTinhStars.length > 0 ? chinhTinhStars.map((star) => star.name) : (cung.chinhTinh ?? []);

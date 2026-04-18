@@ -343,7 +343,7 @@ function parseCanChi(gz: string): { can: ThienCan; chi: DiaChi; canIdx: number; 
 // ─── Kiểu dữ liệu output ──────────────────────────────────────────────────────
 export interface NamTongStar {
   name: string;
-  type: "chinh_tinh" | "phu_tinh";
+  type: "chinh_tinh" | "phu_tinh" | "sao_luu";
   brightness?: TrangThai;
   tuHoa?: "Hóa Lộc" | "Hóa Quyền" | "Hóa Khoa" | "Hóa Kỵ";
   isTuanKhong?: boolean;
@@ -385,6 +385,9 @@ export interface NamTongLaSo {
   // Tuần/Triệt
   tuanKhong: [number, number];
   trietLo: [number, number];
+  // Vận Hạn
+  luuSao?: { name: string; cung: string; dia_chi: string; offset: number }[];
+  van_han?: any; // Compatibility for UI
 }
 
 // ─── Ngũ hành cung theo địa chi ───────────────────────────────────────────────
@@ -731,6 +734,44 @@ export function calculateNamTong(input: {
   // Khởi tại Dần, đếm thuận theo tháng rồi theo giờ
   addPhu(mod(2 + (thangAm - 1) + gioChiIdx, 12), "Đẩu Quân");
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 24. Lưu sao (9 sao vận hạn)
+  // Tính theo năm xem hạn (hiện tại tính theo năm sinh để tham chiếu)
+  // Nếu có tính năng xem hạn sẽ truyền namXem, mặc định namXem = namAm.
+  // ═══════════════════════════════════════════════════════════════════════════
+  const namXem = new Date().getFullYear();
+  let namXemChiIdx = chiNamIdx; // Tạm dùng chi năm sinh nếu không có input năm xem
+  // Logic chuẩn lưu sao theo Can/Chi năm xem hạn:
+  const LUU_SAO_OFFSETS: Array<{ name: string; offset: number }> = [
+    { name: "Lưu Thái Tuế", offset: 0 },
+    { name: "Lưu Tang Môn", offset: 4 },
+    { name: "Lưu Bạch Hổ", offset: -4 },
+    { name: "Lưu Thiên Khốc", offset: 8 },
+    { name: "Lưu Thiên Hư", offset: 8 },
+    { name: "Lưu Lộc Tồn", offset: 2 },
+    { name: "Lưu Thiên Mã", offset: 3 },
+    { name: "Lưu Kình Dương", offset: 6 },
+    { name: "Lưu Đà La", offset: -3 },
+  ];
+  const luuSaoArray = LUU_SAO_OFFSETS.map(({ name, offset }) => {
+    const cungIdx = mod(chiNamIdx + offset, 12);
+    
+    // Add directly to the palace's stars array
+    cungMap[cungIdx].stars.push({
+      name,
+      type: "sao_luu",
+      isTuanKhong: cungMap[cungIdx].isTuanKhong,
+      isTrIetLo: cungMap[cungIdx].isTrIetLo,
+    });
+
+    return {
+      name,
+      cung: CUNG_KEYS[mod(cungIdx - menhIdx + 12, 12)],
+      dia_chi: CHI[cungIdx],
+      offset,
+    };
+  });
+
   return {
     hoTen: ho_ten,
     gioiTinh: gioi_tinh,
@@ -750,5 +791,13 @@ export function calculateNamTong(input: {
     thanCungIndex: thanIdx,
     tuanKhong,
     trietLo: trietLo ?? [0, 1],
+    luuSao: luuSaoArray,
+    van_han: {
+      nam_xem: namXem,
+      tuoi_hien_tai: namXem - namAm + 1,
+      cuu_phi_tinh: luuSaoArray,
+      dai_han_hien_tai: null,
+      tieu_han_hien_tai: null,
+    },
   };
 }
