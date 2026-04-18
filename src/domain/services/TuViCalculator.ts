@@ -1,5 +1,6 @@
 // Cần cài đặt package: npm install lunar-javascript
 import { Solar, Lunar } from "lunar-javascript";
+import { HUNG_TINH_LIST } from "@/data/constants";
 
 // Bảng dữ liệu
 const CAN = [
@@ -262,6 +263,187 @@ function getGioChiIdx(gio: number, phut: number): number {
 }
 
 // Helper: parse ngày linh hoạt (DD/MM/YYYY hoặc YYYY-MM-DD)
+const CUNG_LABEL_MAP: Record<string, string> = {
+  menh: "Mệnh",
+  phu_mau: "Phụ Mẫu",
+  phuc_duc: "Phúc Đức",
+  dien_trach: "Điền Trạch",
+  quan_loc: "Quan Lộc",
+  no_boc: "Nô Bộc",
+  thien_di: "Thiên Di",
+  tat_ach: "Tật Ách",
+  tai_bach: "Tài Bạch",
+  tu_tuc: "Tử Tức",
+  huynh_de: "Huynh Đệ",
+  phu_the: "Phu Thê",
+};
+
+const CUNG_HANH_MAP: Record<string, string> = {
+  phu_mau: "Thổ",
+  phuc_duc: "Mộc",
+  dien_trach: "Thổ",
+  quan_loc: "Mộc",
+  no_boc: "Thổ",
+  thien_di: "Hỏa",
+  tat_ach: "Thủy",
+  tai_bach: "Kim",
+  tu_tuc: "Hỏa",
+  huynh_de: "Thủy",
+  phu_the: "Kim",
+};
+
+const TIET_KHI_CANH_BAO = [
+  "Thiên Không",
+  "Địa Không",
+  "Địa Kiếp",
+  "Thiên Tặc",
+  "Quan Đới",
+  "Phá Toái",
+];
+
+const CUU_PHI_TINH_OFFSETS: Array<{ name: string; offset: number }> = [
+  { name: "Lưu Thái Tuế", offset: 0 },
+  { name: "Lưu Tang Môn", offset: 4 },
+  { name: "Lưu Bạch Hổ", offset: -4 },
+  { name: "Lưu Thiên Khốc", offset: 8 },
+  { name: "Lưu Thiên Hư", offset: 8 },
+  { name: "Lưu Lộc Tồn", offset: 2 },
+  { name: "Lưu Thiên Mã", offset: 3 },
+  { name: "Lưu Kình Dương", offset: 6 },
+  { name: "Lưu Đà La", offset: -3 },
+];
+
+const GIO_CHI_TIME_RANGE: Record<string, string> = {
+  "Tý": "23:00-01:00",
+  "Sửu": "01:00-03:00",
+  "Dần": "03:00-05:00",
+  "Mão": "05:00-07:00",
+  "Thìn": "07:00-09:00",
+  "Tỵ": "09:00-11:00",
+  "Ngọ": "11:00-13:00",
+  "Mùi": "13:00-15:00",
+  "Thân": "15:00-17:00",
+  "Dậu": "17:00-19:00",
+  "Tuất": "19:00-21:00",
+  "Hợi": "21:00-23:00",
+};
+
+function mod(value: number, base: number): number {
+  return ((value % base) + base) % base;
+}
+
+function getDaiHanDirection(amDuong: string): "thuan" | "nghich" {
+  return amDuong.toLowerCase().includes("dương") ? "thuan" : "nghich";
+}
+
+function getTieuHanDirection(gioiTinh: string): "thuan" | "nghich" {
+  return gioiTinh.toLowerCase() === "nam" ? "thuan" : "nghich";
+}
+
+function getTieuHanStartIndex(chiNamIdx: number): number {
+  if ([2, 6, 10].includes(chiNamIdx)) return chiIdxToCungIdx(4);
+  if ([8, 0, 4].includes(chiNamIdx)) return chiIdxToCungIdx(10);
+  if ([5, 9, 1].includes(chiNamIdx)) return chiIdxToCungIdx(7);
+  return chiIdxToCungIdx(1);
+}
+
+function getCungKeyByDiaChi(cungData: Record<string, any>, diaChi: string): string {
+  return Object.keys(cungData).find((key) => cungData[key]?.dia_chi === diaChi) || "menh";
+}
+
+function getCungDisplayInfo(
+  cungData: Record<string, any>,
+  diaChi: string,
+  nguHanhMenh: string,
+) {
+  const key = getCungKeyByDiaChi(cungData, diaChi);
+  return {
+    key,
+    ten: CUNG_LABEL_MAP[key] || diaChi,
+    hanh: key === "menh" ? nguHanhMenh : (CUNG_HANH_MAP[key] || nguHanhMenh),
+  };
+}
+
+function getNguHanhRelationScore(hanhCung: string, menhHanh: string): number {
+  if (hanhCung === menhHanh) return 0;
+  const order = ["Mộc", "Hỏa", "Thổ", "Kim", "Thủy"];
+  const cungIdx = order.indexOf(hanhCung);
+  const menhIdx = order.indexOf(menhHanh);
+  if (cungIdx === -1 || menhIdx === -1) return 0;
+  if (mod(cungIdx + 1, 5) === menhIdx) return 2;
+  if (mod(cungIdx + 2, 5) === menhIdx) return -2;
+  if (mod(menhIdx + 1, 5) === cungIdx) return 1;
+  if (mod(menhIdx + 2, 5) === cungIdx) return -1;
+  return 0;
+}
+
+function describeNguHanhRelation(score: number): string {
+  if (score >= 2) return "Tương sinh mạnh với mệnh, dễ có trợ lực.";
+  if (score === 1) return "Có độ nâng đỡ vừa phải, hợp để tích lũy.";
+  if (score === 0) return "Trung hòa, cần dựa vào nỗ lực bản thân.";
+  if (score === -1) return "Có va chạm nhẹ, nên giữ nhịp độ ổn định.";
+  return "Khá xung khắc với mệnh, cần thận trọng hơn bình thường.";
+}
+
+function scoreCurrentLayer(
+  chinhTinh: string[],
+  phuTinh: string[],
+  hanhCung: string,
+  menhHanh: string,
+): number {
+  const hungCount = phuTinh.filter((star) => HUNG_TINH_LIST.includes(star)).length;
+  const relationScore = getNguHanhRelationScore(hanhCung, menhHanh);
+  return relationScore + Math.min(chinhTinh.length, 2) - Math.min(hungCount, 3);
+}
+
+function buildVanHanPeriod(
+  cungData: Record<string, any>,
+  cungIdx: number,
+  nguHanhMenh: string,
+  extra: Record<string, any> = {},
+) {
+  const diaChi = CUNG[cungIdx];
+  const detail = getCungDisplayInfo(cungData, diaChi, nguHanhMenh);
+  const cungKey = getCungKeyByDiaChi(cungData, diaChi);
+  const periodData = cungData[cungKey] || {};
+  const chinhTinh = periodData.chinh_tinh || [];
+  const phuTinh = periodData.phu_tinh || [];
+  const tuHoa = periodData.tu_hoa || [];
+  const score = scoreCurrentLayer(chinhTinh, phuTinh, detail.hanh, nguHanhMenh);
+
+  return {
+    cung: detail.ten,
+    dia_chi: diaChi,
+    ten_cung: detail.ten,
+    hanh_cung: detail.hanh,
+    chinh_tinh: chinhTinh,
+    phu_tinh: phuTinh,
+    tu_hoa: tuHoa,
+    score,
+    nhan_xet: describeNguHanhRelation(score),
+    ...extra,
+  };
+}
+
+function calculateCuuPhiTinh(namXem: number) {
+  const { chiIdx } = getCanChiNam(namXem);
+  const baseIdx = chiIdxToCungIdx(chiIdx);
+  return CUU_PHI_TINH_OFFSETS.map(({ name, offset }) => ({
+    name,
+    cung: CUNG[mod(baseIdx + offset, 12)],
+    dia_chi: CUNG[mod(baseIdx + offset, 12)],
+    offset,
+  }));
+}
+
+function getDanhGiaTong(score: number): string {
+  if (score >= 8) return "Rất tốt";
+  if (score >= 6) return "Tốt";
+  if (score >= 4) return "Trung bình";
+  if (score >= 2) return "Xấu";
+  return "Rất xấu";
+}
+
 function parseDateFlexible(dateStr: string): [number, number, number] {
   const parts = dateStr.split(/[\/\-]/).map(Number);
   if (parts.length !== 3 || parts.some(isNaN)) {
@@ -797,29 +979,88 @@ export async function calculateTuVi(input: any): Promise<any> {
   const namAmHienTai = lunarNow.getYear();
   const tuoiHienTai = namAmHienTai - namAm + 1;
 
-  const startIdxDaiHan = (cungMenhIdx + 1) % 12;
-  const soThuTuDaiHan = Math.ceil(tuoiHienTai / soCuc);
-  const soThuTuDaiHanMod = ((((soThuTuDaiHan - 1) % 12) + 12) % 12) + 1;
-  const idxDaiHanHienTai = (startIdxDaiHan + soThuTuDaiHanMod - 1) % 12;
-  const cungDaiHanHienTai = CUNG[idxDaiHanHienTai];
-  const soThuTuDaiHanTiep = (soThuTuDaiHanMod % 12) + 1;
-  const idxDaiHanTiep = (startIdxDaiHan + soThuTuDaiHanTiep - 1) % 12;
-  const cungDaiHanTiep = CUNG[idxDaiHanTiep];
+  const huongDaiHan = getDaiHanDirection(amDuong);
+  const huongTieuHan = getTieuHanDirection(gioi_tinh);
+  const startIdxDaiHan = soCuc;
+  const daiHanSteps = Math.floor(Math.max(tuoiHienTai - 1, 0) / 10);
+  const idxDaiHanHienTai = huongDaiHan === "thuan"
+    ? mod(startIdxDaiHan + daiHanSteps, 12)
+    : mod(startIdxDaiHan - daiHanSteps, 12);
+  const idxDaiHanTiep = huongDaiHan === "thuan"
+    ? mod(idxDaiHanHienTai + 1, 12)
+    : mod(idxDaiHanHienTai - 1, 12);
 
-  const tuoiBatDauHienTai = (soThuTuDaiHanMod - 1) * soCuc + 1;
-  const tuoiKetThucHienTai = soThuTuDaiHanMod * soCuc;
+  const tuoiBatDauHienTai = daiHanSteps * 10 + 1;
+  const tuoiKetThucHienTai = tuoiBatDauHienTai + 9;
   const tuoiBatDauTiep = tuoiKetThucHienTai + 1;
-  const tuoiKetThucTiep = tuoiKetThucHienTai + soCuc;
+  const tuoiKetThucTiep = tuoiBatDauTiep + 9;
 
   // Tiểu hạn hiện tại
-  let idxTieuHanHienTai: number;
-  if (gioi_tinh.toLowerCase() === "nam") {
-    idxTieuHanHienTai = (tuoiHienTai - 1) % 12;
-  } else {
-    idxTieuHanHienTai = (6 - (tuoiHienTai - 1) + 12 * 1000) % 12;
+  const startIdxTieuHan = getTieuHanStartIndex(chiNamIdx);
+  const yearsToMove = Math.max(namAmHienTai - namAm, 0);
+  const idxTieuHanHienTai = huongTieuHan === "thuan"
+    ? mod(startIdxTieuHan + yearsToMove, 12)
+    : mod(startIdxTieuHan - yearsToMove, 12);
+  const canChiTieuHan = `${CAN[mod(namAmHienTai - 4, 10)]} ${CHI[mod(namAmHienTai - 4, 12)]}`;
+
+  const lunarMonthNow = Math.abs(lunarNow.getMonth());
+  const lunarDayNow = lunarNow.getDay();
+  const currentGioChiIdx = getGioChiIdx(now.getHours(), now.getMinutes());
+  const currentGioChi = CHI[currentGioChiIdx];
+
+  const januaryIndex = mod(idxTieuHanHienTai - (thangAm - 1), 12);
+  const nguyetHan = Array.from({ length: 12 }, (_, index) => {
+    const month = index + 1;
+    const cungIdx = mod(januaryIndex + index, 12);
+    return buildVanHanPeriod(cungData, cungIdx, nguHanh, {
+      thang: month,
+      nhan_xet_ngan: month === lunarMonthNow ? "Tháng đang vận động mạnh nhất." : "Nên giữ nhịp đều và quan sát thêm.",
+    });
+  });
+  const nguyetHanHienTai = nguyetHan[lunarMonthNow - 1] || nguyetHan[0];
+
+  const idxNhatHanHienTai = mod(CUNG.indexOf(nguyetHanHienTai.dia_chi) + lunarDayNow - 1, 12);
+  const nhatHanHienTai = buildVanHanPeriod(cungData, idxNhatHanHienTai, nguHanh, {
+    ngay: lunarDayNow,
+  });
+
+  const idxThoiHanHienTai = mod(idxNhatHanHienTai + currentGioChiIdx, 12);
+  const thoiHanHienTai = buildVanHanPeriod(cungData, idxThoiHanHienTai, nguHanh, {
+    gio_index: currentGioChiIdx + 1,
+    gio_chi: currentGioChi,
+    khung_gio: GIO_CHI_TIME_RANGE[currentGioChi] || "",
+  });
+
+  const daiHanHienTai = buildVanHanPeriod(cungData, idxDaiHanHienTai, nguHanh, {
+    tuoi_bat_dau: tuoiBatDauHienTai,
+    tuoi_ket_thuc: tuoiKetThucHienTai,
+    huong: huongDaiHan,
+  });
+  const daiHanTiepTheo = buildVanHanPeriod(cungData, idxDaiHanTiep, nguHanh, {
+    tuoi_bat_dau: tuoiBatDauTiep,
+    tuoi_ket_thuc: tuoiKetThucTiep,
+    huong: huongDaiHan,
+  });
+  const tieuHanHienTai = buildVanHanPeriod(cungData, idxTieuHanHienTai, nguHanh, {
+    nam: namAmHienTai,
+    can_chi_nam: canChiTieuHan,
+  });
+
+  const cuuPhiTinh = calculateCuuPhiTinh(namAmHienTai);
+  const trungPhung = idxDaiHanHienTai === idxTieuHanHienTai;
+  const canhBao = Array.from(
+    new Set(
+      [...daiHanHienTai.phu_tinh, ...tieuHanHienTai.phu_tinh, ...nguyetHanHienTai.phu_tinh]
+        .filter((star) => TIET_KHI_CANH_BAO.includes(star)),
+    ),
+  );
+
+  let diemTong = 5 + daiHanHienTai.score + tieuHanHienTai.score + nguyetHanHienTai.score;
+  if (trungPhung) {
+    diemTong += tieuHanHienTai.score >= 0 ? 1 : -1;
   }
-  const cungTieuHanHienTai = CUNG[idxTieuHanHienTai];
-  const canChiTieuHan = `${CAN[(namAmHienTai + idxTieuHanHienTai) % 10]} ${CHI[idxTieuHanHienTai]}`;
+  diemTong = Math.max(0, Math.min(10, diemTong));
+  const danhGiaChung = getDanhGiaTong(diemTong);
 
    // Dự đoán ngày mai (hỗ trợ DD/MM/YYYY và YYYY-MM-DD)
    let d2: number, m2: number, y2: number;
@@ -931,36 +1172,21 @@ export async function calculateTuVi(input: any): Promise<any> {
     };
   }
 
-  // Van han
-  const daiHanKey = getKeyForChi(idxDaiHanHienTai);
-  const tiepKey = getKeyForChi(idxDaiHanTiep);
-  const tieuHanKey = getKeyForChi(idxTieuHanHienTai);
-
   result.van_han = {
-    dai_han_hien_tai: {
-      cung: cungDaiHanHienTai,
-      dia_chi: cungDaiHanHienTai,
-      tuoi_bat_dau: tuoiBatDauHienTai,
-      tuoi_ket_thuc: tuoiKetThucHienTai,
-      chinh_tinh: cungData[daiHanKey].chinh_tinh,
-      phu_tinh: cungData[daiHanKey].phu_tinh,
-    },
-    dai_han_tiep_theo: {
-      cung: cungDaiHanTiep,
-      dia_chi: cungDaiHanTiep,
-      tuoi_bat_dau: tuoiBatDauTiep,
-      tuoi_ket_thuc: tuoiKetThucTiep,
-      chinh_tinh: cungData[tiepKey].chinh_tinh,
-      phu_tinh: cungData[tiepKey].phu_tinh,
-    },
-    tieu_han_hien_tai: {
-      nam: namAmHienTai,
-      can_chi_nam: canChiTieuHan,
-      cung: cungTieuHanHienTai,
-      dia_chi: cungTieuHanHienTai,
-      chinh_tinh: cungData[tieuHanKey].chinh_tinh,
-      phu_tinh: cungData[tieuHanKey].phu_tinh,
-    },
+    nam_xem: namAmHienTai,
+    tuoi_hien_tai: tuoiHienTai,
+    dai_han_hien_tai: daiHanHienTai,
+    dai_han_tiep_theo: daiHanTiepTheo,
+    tieu_han_hien_tai: tieuHanHienTai,
+    nguyet_han_hien_tai: nguyetHanHienTai,
+    nhat_han_hien_tai: nhatHanHienTai,
+    thoi_han_hien_tai: thoiHanHienTai,
+    nguyet_han: nguyetHan,
+    cuu_phi_tinh: cuuPhiTinh,
+    trung_phung: trungPhung,
+    danh_gia_chung: danhGiaChung,
+    diem_tong: diemTong,
+    canh_bao: canhBao,
   };
 
   // Du doan ngay mai
