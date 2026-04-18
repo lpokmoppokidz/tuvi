@@ -1,7 +1,7 @@
 // src/ui/components/tong-quan/useSections.ts
 import { useMemo } from "react";
 import { User, Coins, Users, Activity, TrendingUp, Lightbulb } from "lucide-react";
-import { CHINH_TINH_DESC } from "@/data/constants";
+import { CHINH_TINH_DESC, getPhuTinhMeta, isHungPhuTinh, normalizePhuTinhName } from "@/data/constants";
 import type { TuViData } from "@/domain/model/types";
 import type { SectionItem } from "./SectionAccordion";
 
@@ -14,6 +14,10 @@ function getMoTa(saoList: string[], field: keyof typeof CHINH_TINH_DESC[string],
     if (desc && desc[field]) return desc[field] as string;
   }
   return fallback;
+}
+
+function normalizePhuTinhList(items: string[] | undefined): string[] {
+  return (items ?? []).map((item) => normalizePhuTinhName(item));
 }
 
 export interface Section {
@@ -92,7 +96,8 @@ export function useSections(tuViData: TuViData, t: (key: string, opts?: any) => 
           {
             label: t("tong_quan.suc_khoe_luu_y"),
             content: (() => {
-              const hung = [...(menh?.phu_tinh || []), ...(tat_ach?.phu_tinh || [])].filter(s => HUNG_TINH_LIST.includes(s));
+              const hung = [...normalizePhuTinhList(menh?.phu_tinh), ...normalizePhuTinhList(tat_ach?.phu_tinh)]
+                .filter((s) => isHungPhuTinh(s) || HUNG_TINH_LIST.includes(s));
               return hung.length > 0
                 ? t("tong_quan.suc_khoe_hung_tinh", { stars: hung.join(", ") })
                 : t("tong_quan.suc_khoe_no_hung");
@@ -147,7 +152,8 @@ export function useSections(tuViData: TuViData, t: (key: string, opts?: any) => 
           {
             label: t("tong_quan.loi_khuyen_diem_manh"),
             content: (() => {
-              const cat = (menh?.phu_tinh || []).filter(s => CAT_TINH_LIST.includes(s));
+              const cat = normalizePhuTinhList(menh?.phu_tinh)
+                .filter((s) => getPhuTinhMeta(s)?.loai === "cat" || CAT_TINH_LIST.includes(s));
               return cat.length > 0
                 ? t("tong_quan.loi_khuyen_cat_tinh", { stars: cat.join(", ") })
                 : getMoTa(menhSao, "tinh_cach", upd);

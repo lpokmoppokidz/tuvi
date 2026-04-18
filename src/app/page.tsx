@@ -1,22 +1,24 @@
+"use client";
 import React, { useState, useEffect, useMemo, lazy, Suspense, useCallback, useTransition } from "react";
+import "../i18n/config";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LayoutDashboard, CalendarDays, User, Compass } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
-import type { NavItem } from "./domain/model/types";
-import { useTuViStore } from "./store/useTuViStore";
-import { useUIStore }   from "./store/useUIStore";
-import { pageTransition, navActive } from "./ui/shared/utils/motion-config";
+import type { NavItem } from "../domain/model/types";
+import { useTuViStore } from "../store/useTuViStore";
+import { useUIStore }   from "../store/useUIStore";
+import { pageTransition, navActive } from "../ui/shared/utils/motion-config";
 
 // 3. Lazy load screens — only bundle what's needed on first paint
-const LaSoScreen    = lazy(() => import("./ui/features/la-so/LaSoScreen").then(m => ({ default: m.LaSoScreen })));
-const VanHanScreen  = lazy(() => import("./ui/features/van-han/VanHanScreen").then(m => ({ default: m.VanHanScreen })));
-const NgayMaiScreen = lazy(() => import("./ui/features/ngay-mai/NgayMaiScreen").then(m => ({ default: m.NgayMaiScreen })));
-const AiChatScreen  = lazy(() => import("./ui/features/ai-chat/AiChatScreen").then(m => ({ default: m.AiChatScreen })));
-const ProfileScreen = lazy(() => import("./ui/features/profile/ProfileScreen").then(m => ({ default: m.ProfileScreen })));
-const LoginScreen   = lazy(() => import("./ui/features/auth/LoginScreen").then(m => ({ default: m.LoginScreen })));
-const RegisterScreen= lazy(() => import("./ui/features/auth/RegisterScreen").then(m => ({ default: m.RegisterScreen })));
+const LaSoScreen    = lazy(() => import("../ui/features/la-so/LaSoScreen").then(m => ({ default: m.LaSoScreen })));
+const VanHanScreen  = lazy(() => import("../ui/features/van-han/VanHanScreen").then(m => ({ default: m.VanHanScreen })));
+const NgayMaiScreen = lazy(() => import("../ui/features/ngay-mai/NgayMaiScreen").then(m => ({ default: m.NgayMaiScreen })));
+const AiChatScreen  = lazy(() => import("../ui/features/ai-chat/AiChatScreen").then(m => ({ default: m.AiChatScreen })));
+const ProfileScreen = lazy(() => import("../ui/features/profile/ProfileScreen").then(m => ({ default: m.ProfileScreen })));
+const LoginScreen   = lazy(() => import("../ui/features/auth/LoginScreen").then(m => ({ default: m.LoginScreen })));
+const RegisterScreen= lazy(() => import("../ui/features/auth/RegisterScreen").then(m => ({ default: m.RegisterScreen })));
 
 type AuthScreen = "login" | "register" | "app";
 

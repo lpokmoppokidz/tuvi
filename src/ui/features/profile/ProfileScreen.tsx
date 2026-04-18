@@ -4,7 +4,7 @@ import { Moon, Sun, Star, Trash2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
 import { LANGUAGES, type Language } from "@/i18n/config";
-import type { TuViData } from "@/domain/model/types";
+import type { NamTongLaSo as TuViData } from "@/domain/model/types";
 import { AvatarCard } from "@/ui/features/profile/components/AvatarCard";
 import { ProfileSettingRow } from "@/ui/features/profile/components/ProfileSettingRow";
 import { LanguageSwitcher } from "@/ui/shared/components/LanguageSwitcher";

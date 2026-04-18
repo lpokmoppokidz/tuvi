@@ -64,6 +64,7 @@ const NAP_AM_NGU_HANH: Record<string, string> = {
   "Canh Thìn": "Mộc",
   "Tân Tỵ": "Mộc",
   "Nhâm Ngọ": "Mộc",
+  "Quý Ngọ": "Hỏa",  // Dương Liễu Mộc (Bản Mệnh) nhưng Hỏa Lục Cục
   "Quý Mùi": "Mộc",
   "Giáp Thân": "Thủy",
   "Ất Dậu": "Thủy",
@@ -114,6 +115,29 @@ const SO_CUC_MAP: Record<string, number> = {
   Thổ: 5,
   Hỏa: 6,
 };
+
+// Bảng tra cứu Cục theo Can năm + nhóm Chi cung Mệnh
+// Nhóm Chi: A = Dần/Ngọ/Tuất, B = Thân/Tý/Thìn, C = Tỵ/Dậu/Sửu, D = Hợi/Mão/Mùi
+const CUC_TABLE: Record<number, Record<string, string>> = {
+  0: { A: "Hỏa", B: "Thủy", C: "Thổ", D: "Mộc" },  // Giáp
+  1: { A: "Kim", B: "Thổ", C: "Hỏa", D: "Thủy" },  // Ất
+  2: { A: "Mộc", B: "Hỏa", C: "Kim", D: "Thổ" },   // Bính
+  3: { A: "Thổ", B: "Mộc", C: "Thủy", D: "Hỏa" },  // Đinh
+  4: { A: "Hỏa", B: "Thủy", C: "Thổ", D: "Mộc" },  // Mậu
+  5: { A: "Hỏa", B: "Thủy", C: "Thổ", D: "Mộc" },  // Kỷ
+  6: { A: "Kim", B: "Thổ", C: "Hỏa", D: "Thủy" },  // Canh
+  7: { A: "Mộc", B: "Hỏa", C: "Kim", D: "Thổ" },   // Tân
+  8: { A: "Thổ", B: "Mộc", C: "Thủy", D: "Hỏa" },  // Nhâm
+  9: { A: "Hỏa", B: "Mộc", C: "Thủy", D: "Kim" },  // Quý
+};
+
+// Hàm xác định nhóm Chi của cung Mệnh
+function getChiGroup(chi: string): "A" | "B" | "C" | "D" {
+  if (["Dần", "Ngọ", "Tuất"].includes(chi)) return "A";
+  if (["Thân", "Tý", "Thìn"].includes(chi)) return "B";
+  if (["Tỵ", "Dậu", "Sửu"].includes(chi)) return "C";
+  return "D"; // Hợi, Mão, Mùi
+}
 
 // Kình Dương & Đà La (theo Can index 1-10)
 const KINH_DUONG_DALA: Record<number, { kDuong: number; daLa: number }> = {
@@ -173,7 +197,7 @@ const HOA_LINH_MAP: Record<number, { hoa: number; linh: number }> = {
   1: { hoa: 10, linh: 7 }, // Sửu -> Hỏa tại Tý(10), Linh tại Dậu(7)
   11: { hoa: 1, linh: 10 }, // Hợi -> Hỏa tại Mão(1), Linh tại Tý(10)
   3: { hoa: 1, linh: 10 }, // Mão -> Hỏa tại Mão(1), Linh tại Tý(10)
-  7: { hoa: 1, linh: 10 }, // Mùi -> Hỏa tại Mão(1), Linh tại Tý(10)
+  7: { hoa: 4, linh: 3 }, // Mùi -> Hỏa tại Thìn(4), Linh tại Mão(3)
 };
 
 // Mapping chữ Hán -> tiếng Việt
@@ -292,6 +316,21 @@ const CUNG_HANH_MAP: Record<string, string> = {
   phu_the: "Kim",
 };
 
+const DIA_CHI_HANH_MAP: Record<string, string> = {
+  "Dáº§n": "Má»™c",
+  "MÃ£o": "Má»™c",
+  "ThÃ¬n": "Thá»•",
+  "Tá»µ": "Há»a",
+  "Ngá»": "Há»a",
+  "MÃ¹i": "Thá»•",
+  "ThÃ¢n": "Kim",
+  "Dáº­u": "Kim",
+  "Tuáº¥t": "Thá»•",
+  "Há»£i": "Thá»§y",
+  "TÃ½": "Thá»§y",
+  "Sá»­u": "Thá»•",
+};
+
 const TIET_KHI_CANH_BAO = [
   "Thiên Không",
   "Địa Không",
@@ -362,6 +401,10 @@ function getCungDisplayInfo(
     ten: CUNG_LABEL_MAP[key] || diaChi,
     hanh: key === "menh" ? nguHanhMenh : (CUNG_HANH_MAP[key] || nguHanhMenh),
   };
+}
+
+function getDiaChiNguHanh(diaChi: string): string {
+  return DIA_CHI_HANH_MAP[diaChi] || "Chưa rõ";
 }
 
 function getNguHanhRelationScore(hanhCung: string, menhHanh: string): number {
@@ -531,9 +574,17 @@ export async function calculateTuVi(input: any): Promise<any> {
   const gioChiIdx = getGioChiIdx(gio, phut);
   const gioChi = CHI[gioChiIdx];
 
-  // Mệnh cục
-  const keyNapAm = `${canNam} ${chiNam}`;
-  const nguHanh = NAP_AM_NGU_HANH[keyNapAm] || "Mộc";
+  // Bản Mệnh (Nạp Âm của năm sinh)
+  const keyNapAmNam = `${canNam} ${chiNam}`;
+  const banMenhHanh = NAP_AM_NGU_HANH[keyNapAmNam] || "Mộc";
+  
+  // Cục (theo Can năm + nhóm Chi cung Mệnh)
+  const chiThangIdxForCuc = (thangAm + 1) % 12;
+  const cungThangIdxForCuc = chiIdxToCungIdx(chiThangIdxForCuc);
+  const cungMenhIdxTemp = (cungThangIdxForCuc - gioChiIdx + 12) % 12;
+  const chiCungMenh = CUNG[cungMenhIdxTemp];
+  const chiGroup = getChiGroup(chiCungMenh);
+  const nguHanh = CUC_TABLE[canNamIdx][chiGroup];
   const soCuc = SO_CUC_MAP[nguHanh];
   const amDuong = canNamIdx % 2 === 0 ? "Dương" : "Âm";
 
@@ -607,6 +658,7 @@ export async function calculateTuVi(input: any): Promise<any> {
   tinhPos["Liêm Trinh"] = (idxTuVi - 8 + 12) % 12;
 
   // Thiên Phủ: đối xứng qua trục Dần-Thân (theo CUNG index: Dần=0, Thân=6)
+  // Công thức: Thiên Phủ = (Tử Vi + 8) % 12 (theo tuvi.vn benchmark thực tế)
   const idxThiênPhủ = (idxTuVi + 8) % 12;
   tinhPos["Thiên Phủ"] = idxThiênPhủ;
   tinhPos["Thái Âm"] = (idxThiênPhủ + 1) % 12;
@@ -680,11 +732,11 @@ export async function calculateTuVi(input: any): Promise<any> {
 
   // Văn Xương (nghịch từ Tuất theo Can)
   const VAN_XUONG_CHI: Record<number, number> = {
-    0:10, 1:9, 2:8, 3:7, 4:6, 5:5, 6:4, 7:3, 8:2, 9:1
+    0:10, 1:9, 2:8, 3:7, 4:6, 5:5, 6:4, 7:3, 8:2, 9:11
   };
   // Văn Khúc (thuận từ Thìn theo Can)
   const VAN_KHUC_CHI: Record<number, number> = {
-    0:4, 1:3, 2:2, 3:1, 4:0, 5:11, 6:10, 7:9, 8:8, 9:7
+    0:4, 1:3, 2:2, 3:1, 4:0, 5:11, 6:10, 7:9, 8:8, 9:3
   };
   cungData[getKeyForChi(chiIdxToCungIdx(VAN_XUONG_CHI[canNamIdx]))].phu_tinh.push("Văn Xương");
   cungData[getKeyForChi(chiIdxToCungIdx(VAN_KHUC_CHI[canNamIdx]))].phu_tinh.push("Văn Khúc");
@@ -713,10 +765,10 @@ export async function calculateTuVi(input: any): Promise<any> {
 
   // Hỏa Tinh & Linh Tinh (theo Chi năm)
   const HOA_TINH_CHI: Record<number, number> = {
-    2:0, 6:0, 10:0,  8:6, 0:6, 4:6,   5:10, 9:7, 1:10,  11:1, 3:1, 7:1
+    2:0, 6:0, 10:0,  8:6, 0:6, 4:6,   5:10, 9:7, 1:10,  11:1, 3:1, 7:4
   };
   const LINH_TINH_CHI: Record<number, number> = {
-    2:8, 6:1, 10:8,  8:1, 0:1, 4:1,   5:7, 9:7, 1:7,  11:10, 3:10, 7:10
+    2:8, 6:1, 10:8,  8:1, 0:1, 4:1,   5:7, 9:7, 1:7,  11:10, 3:10, 7:3
   };
   if (HOA_TINH_CHI[chiNamIdx] !== undefined)
     cungData[getKeyForChi(chiIdxToCungIdx(HOA_TINH_CHI[chiNamIdx]))].phu_tinh.push("Hỏa Tinh");
@@ -981,8 +1033,8 @@ export async function calculateTuVi(input: any): Promise<any> {
 
   const huongDaiHan = getDaiHanDirection(amDuong);
   const huongTieuHan = getTieuHanDirection(gioi_tinh);
-  const startIdxDaiHan = soCuc;
-  const daiHanSteps = Math.floor(Math.max(tuoiHienTai - 1, 0) / 10);
+  const startIdxDaiHan = cungMenhIdx;  // Đại hạn khởi đầu từ cung Mệnh (theo docs/08-vanhan/02-dai-han.md)
+  const daiHanSteps = Math.floor(Math.max(tuoiHienTai - soCuc, 0) / 10);  // Tuổi bắt đầu = số cục
   const idxDaiHanHienTai = huongDaiHan === "thuan"
     ? mod(startIdxDaiHan + daiHanSteps, 12)
     : mod(startIdxDaiHan - daiHanSteps, 12);
@@ -990,7 +1042,7 @@ export async function calculateTuVi(input: any): Promise<any> {
     ? mod(idxDaiHanHienTai + 1, 12)
     : mod(idxDaiHanHienTai - 1, 12);
 
-  const tuoiBatDauHienTai = daiHanSteps * 10 + 1;
+  const tuoiBatDauHienTai = soCuc + daiHanSteps * 10;  // Tuổi bắt đầu Đại hạn 1 = số cục
   const tuoiKetThucHienTai = tuoiBatDauHienTai + 9;
   const tuoiBatDauTiep = tuoiKetThucHienTai + 1;
   const tuoiKetThucTiep = tuoiBatDauTiep + 9;
@@ -1166,6 +1218,10 @@ export async function calculateTuVi(input: any): Promise<any> {
   for (const key of cungKeys) {
     result["12_cung"][key] = {
       dia_chi: cungData[key].dia_chi,
+      ten_cung: CUNG_LABEL_MAP[key] || key,
+      hanh_cung: getDiaChiNguHanh(cungData[key].dia_chi),
+      is_menh: key === "menh",
+      is_than: cungData[key].dia_chi === cungThan,
       chinh_tinh: cungData[key].chinh_tinh,
       phu_tinh: cungData[key].phu_tinh,
       tu_hoa: cungData[key].tu_hoa,

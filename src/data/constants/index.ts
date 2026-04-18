@@ -1,6 +1,16 @@
 // Core data
 export * from "./chinh-tinh";
-export { HUNG_TINH_LIST, PHU_TINH_DESC } from "./phu-tinh";
+export {
+  HUNG_TINH_LIST,
+  PHU_TINH_ALIASES,
+  PHU_TINH_DESC,
+  PHU_TINH_GROUPS,
+  PHU_TINH_ORDER,
+  getPhuTinhMeta,
+  isHungPhuTinh,
+  normalizePhuTinhName,
+} from "./phu-tinh";
+export type { PhuTinhLoai, PhuTinhMeta } from "./phu-tinh";
 export * from "./tu-hoa";
 export * from "./cung-chi-tiet";
 export * from "./cung-list";
@@ -10,3 +20,4 @@ export * from "./ui/tabs";
 export { isHungTinh, type HungTinh } from "./ui/hung-tinh";
 export * from "./ui/cung-relation";
 export * from "./ui/tu-hoa-detail";
+export * from "./ui/tuvi-data";

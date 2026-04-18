@@ -1,14 +1,8 @@
-export const HUNG_TINH_LIST = [
-  "Kình Dương", "Đà La", "Hỏa Tinh", "Linh Tinh",
-  "Thiên Không", "Địa Kiếp", "Thiên La", "Địa Võng",
-  "Kiếp Sát", "Phá Toái", "Thiên Hình", "Bạch Hổ",
-  "Tang Môn", "Điếu Khách", "Bệnh Phù", "Tử Phù",
-  "Tuế Phá", "Quan Phù", "Đại Hao", "Phục Binh",
-  "Phi Liêm", "Thiên Khốc", "Thiên Hư", "Cô Thần",
-  "Quả Tú", "Lưu Hà", "Thiên Riêu", "Quan Phủ",
-] as const;
+import { HUNG_TINH_LIST as BASE_HUNG_TINH_LIST, isHungPhuTinh } from "../phu-tinh";
 
-export type HungTinh = typeof HUNG_TINH_LIST[number];
+export const HUNG_TINH_LIST = [...BASE_HUNG_TINH_LIST];
+
+export type HungTinh = string;
 
 export const isHungTinh = (tinh: string): boolean =>
-  HUNG_TINH_LIST.includes(tinh as HungTinh);
+  isHungPhuTinh(tinh);

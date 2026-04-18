@@ -3,19 +3,19 @@ import React from "react";
 import { User, ShieldCheck, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
 import { useTranslation } from "react-i18next";
-import type { TuViData } from "@/domain/model/types";
+import type { NamTongLaSo } from "@/domain/model/types";
 
 interface Props {
-  tuViData?: TuViData | null;
+  tuViData?: NamTongLaSo | null;
 }
 
 export const AvatarCard: React.FC<Props> = ({ tuViData }) => {
   const { t } = useTranslation();
 
-  const ho_ten   = tuViData?.thong_tin_co_ban?.ho_ten || t("profile.guest");
-  const can_chi  = tuViData?.thong_tin_co_ban?.can_chi_nam || "";
-  const ngu_hanh = tuViData?.thong_tin_co_ban?.ngu_hanh_menh_cuc || "";
-  const am_duong = tuViData?.thong_tin_co_ban?.am_duong || "";
+  const ho_ten   = tuViData?.hoTen || t("profile.guest");
+  const can_chi  = tuViData?.canChiNam || "";
+  const ngu_hanh = tuViData?.banMenhHanh || "";
+  const am_duong = tuViData?.amDuong || "";
   const initials = ho_ten.split(" ").slice(-2).map((w: string) => w[0]).join("").toUpperCase();
 
   return (

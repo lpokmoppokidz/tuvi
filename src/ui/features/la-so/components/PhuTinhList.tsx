@@ -2,51 +2,14 @@ import React, { memo, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle, ChevronDown, Shield, XCircle, Zap } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { PHU_TINH_DESC } from "@/data/constants";
+import { resolvePhuTinhList } from "./phuTinhHelper";
 
 interface Props {
   phuTinh: Array<string | number>;
   cungTen: string;
 }
 
-type PhuTinhDesc = (typeof PHU_TINH_DESC)[string];
-
-interface ResolvedPhuTinh {
-  key: string;
-  label: string;
-  desc?: PhuTinhDesc;
-}
-
-const PHU_TINH_ENTRIES = Object.entries(PHU_TINH_DESC);
-
-function resolvePhuTinh(raw: string | number): ResolvedPhuTinh {
-  if (typeof raw === "number" && Number.isInteger(raw)) {
-    const byIndex = PHU_TINH_ENTRIES[raw] ?? PHU_TINH_ENTRIES[raw - 1];
-    if (byIndex) {
-      const [label, desc] = byIndex;
-      return { key: String(raw), label, desc };
-    }
-  }
-
-  const normalized = String(raw ?? "").trim();
-  const direct = PHU_TINH_DESC[normalized];
-  if (direct) {
-    return { key: normalized, label: normalized, desc: direct };
-  }
-
-  if (/^\d+$/.test(normalized)) {
-    const numeric = Number(normalized);
-    const byIndex = PHU_TINH_ENTRIES[numeric] ?? PHU_TINH_ENTRIES[numeric - 1];
-    if (byIndex) {
-      const [label, desc] = byIndex;
-      return { key: normalized, label, desc };
-    }
-  }
-
-  return { key: normalized || "unknown", label: normalized || String(raw) };
-}
-
-function getToneMeta(loai?: PhuTinhDesc["loai"], t?: (key: string) => string) {
+function getToneMeta(loai?: "cat" | "hung" | "trung", t?: (key: string) => string) {
   switch (loai) {
     case "cat":
       return {
@@ -80,7 +43,7 @@ export const PhuTinhList: React.FC<Props> = memo(({ phuTinh, cungTen }) => {
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set());
 
   const resolvedPhuTinh = useMemo(
-    () => (phuTinh ?? []).map(resolvePhuTinh),
+    () => resolvePhuTinhList(phuTinh),
     [phuTinh],
   );
 

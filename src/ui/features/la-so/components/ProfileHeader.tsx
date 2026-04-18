@@ -3,11 +3,11 @@ import React, { memo } from "react";
 import { motion } from "motion/react";
 import { User, Plus, Sparkles, Loader2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { TuViData } from "@/domain/model/types";
+import type { NamTongLaSo } from "@/domain/model/types";
 import { slideUp, tapScale } from "@/ui/shared/utils/motion-config";
 
 interface Props {
-  tuViData: TuViData | null;
+  tuViData: NamTongLaSo | null;
   isCalculating: boolean;
   onAdd: () => void;
 }
@@ -27,13 +27,13 @@ export const ProfileHeader: React.FC<Props> = memo(({ tuViData, isCalculating, o
         </div>
         <div>
           <h2 className="text-xl font-display text-gradient-gold tracking-wider">
-            {tuViData?.thong_tin_co_ban?.ho_ten || t("profile_header.guest")}
+            {tuViData?.hoTen || t("profile_header.guest")}
           </h2>
           <div className="flex items-center gap-2 mt-1">
             <Sparkles size={10} className="text-celestial-gold animate-pulse" />
             <p className="text-[9px] font-display text-white/40 tracking-[0.2em] uppercase">
-              {tuViData?.thong_tin_co_ban?.can_chi_nam || t("profile_header.no_name")} •{" "}
-              {tuViData?.thong_tin_co_ban?.ngu_hanh_menh_cuc || t("profile_header.no_element")}
+              {tuViData?.canChiNam || t("profile_header.no_name")} •{" "}
+              {tuViData?.banMenhHanh || t("profile_header.no_element")}
             </p>
           </div>
         </div>

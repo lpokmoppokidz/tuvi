@@ -13,9 +13,9 @@
 - Tài liệu và script hiện tại của repo đã nhất quán theo `npm`, nên việc tiếp tục dùng `npm` có rủi ro thấp nhất.
 - Chưa đụng tới mã nguồn ứng dụng; thay đổi chỉ nằm ở lớp harness và tài liệu điều phối agent.
 
-### Kết quả
-- Đã thêm `.codex/config.toml`
-- Đã thêm `docs/06-workflow/TASK.md`
-- Đã thêm `docs/06-workflow/session-log.md`
-- Đã thêm `GEMINI.md`
-- Đã thêm `.cursorrules`
+### 2026-04-18
+- Xóa toàn bộ GitNexus khỏi dự án theo yêu cầu của người dùng.
+- Các thư mục đã xóa: `.gitnexus/`, `.claude/`.
+- File đã xóa: `CLAUDE.md`.
+- File đã cập nhật: `docs/01-system-design/README.md` (xóa reference tới GitNexus).
+- Trạng thái: Hoàn tất.

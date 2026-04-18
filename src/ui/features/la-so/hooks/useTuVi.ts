@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import type { TuViData } from "@/domain/model/types";
+import type { NamTongLaSo } from "@/domain/model/types";
 import { TuViService } from "@/domain/services/TuViService";
 
 interface BirthFormData {
@@ -10,9 +10,9 @@ interface BirthFormData {
   gender: "male" | "female";
 }
 
-export const useTuVi = (onSuccess: (data: TuViData) => void) => {
+export const useTuVi = (onSuccess: (data: NamTongLaSo) => void) => {
   const mutation = useMutation({
-    mutationFn: async (formData: BirthFormData) => {
+    mutationFn: async (formData: BirthFormData): Promise<NamTongLaSo> => {
       const [y, m, d] = formData.birthDate.split("-");
       return TuViService.calculateAndSave({
         ho_ten: formData.fullName,

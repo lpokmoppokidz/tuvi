@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { CheckCircle2, CircleDot, Sparkles, XCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { PHU_TINH_DESC } from "@/data/constants";
+import { getPhuTinhMeta } from "@/data/constants";
 import { PhuTinhList } from "./PhuTinhList";
 
 interface PhuTinhTabProps {
@@ -12,7 +12,7 @@ interface PhuTinhTabProps {
 const summarizePhuTinh = (items: string[]) =>
   items.reduce(
     (acc, item) => {
-      const meta = PHU_TINH_DESC[item];
+      const meta = getPhuTinhMeta(item);
 
       if (meta?.loai === "cat") acc.cat += 1;
       else if (meta?.loai === "hung") acc.hung += 1;

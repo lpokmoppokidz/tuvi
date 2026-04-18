@@ -2,23 +2,80 @@ import type { ForwardRefExoticComponent } from "react";
 
 export type NavItem = "laso" | "van_han" | "ngay_mai" | "ai_chat" | "profile";
 
+// ─── Nam Tông types ───────────────────────────────────────────────────────────
+export type TrangThai = "Miếu" | "Vượng" | "Đắc" | "Bình" | "Hãm";
+export type CucType = "Thuy2" | "Moc3" | "Kim4" | "Tho5" | "Hoa6";
+
+export interface NamTongStar {
+  name: string;
+  type: "chinh_tinh" | "phu_tinh";
+  brightness?: TrangThai;
+  tuHoa?: "Hóa Lộc" | "Hóa Quyền" | "Hóa Khoa" | "Hóa Kỵ";
+  isTuanKhong?: boolean;
+  isTrIetLo?: boolean;
+}
+
+export interface NamTongCung {
+  index: number;
+  diaChi: string;
+  hanhCung: string;
+  chucDanh: string;
+  cungKey: string;
+  isMenh: boolean;
+  isThan: boolean;
+  isTuanKhong: boolean;
+  isTrIetLo: boolean;
+  stars: NamTongStar[];
+}
+
+export interface NamTongLaSo {
+  hoTen: string;
+  gioiTinh: string;
+  duongLich: string;
+  amLich: string;
+  gioSinh: string;
+  gioChi: string;
+  canChiNam: string;
+  canNam: string;
+  chiNam: string;
+  amDuong: "Dương" | "Âm";
+  banMenhHanh: string;
+  cuc: CucType;
+  cucSo: number;
+  cungs: NamTongCung[];
+  menhCungIndex: number;
+  thanCungIndex: number;
+  tuanKhong: [number, number];
+  trietLo: [number, number];
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export interface Cung {
   dia_chi: string;
+  ten_cung?: string;
+  hanh_cung?: string;
+  is_menh?: boolean;
+  is_than?: boolean;
   chinh_tinh: string[];
   phu_tinh: string[];
   tu_hoa: string[];
 }
 
 export interface CungDisplay {
+  key?: string;
   ten: string;
   canChi: string;
+  hanhCung?: string;
   isMenh?: boolean;
+  isThan?: boolean;
+  isTuanKhong?: boolean;
+  isTrIetLo?: boolean;
   chinhTinh: string[];
   phuTinh: string[];
   tuHoa: string[];
   description?: string;
   color?: string;
-  stars?: any[];
+  stars?: NamTongStar[];
 }
 
 export interface VanHanPeriod {

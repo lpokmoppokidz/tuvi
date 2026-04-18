@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { TuViData } from "../domain/model/types";
+import type { NamTongLaSo } from "../domain/model/types";
 
 interface TuViStore {
-  tuViData: TuViData | null;
-  setTuViData: (data: TuViData) => void;
+  tuViData: NamTongLaSo | null;
+  setTuViData: (data: NamTongLaSo) => void;
   clearTuViData: () => void;
 }
 
@@ -15,6 +15,6 @@ export const useTuViStore = create<TuViStore>()(
       setTuViData: (data) => set({ tuViData: data }),
       clearTuViData: () => set({ tuViData: null }),
     }),
-    { name: "tuvi-storage" }
+    { name: "tuvi-namtong-storage" }
   )
 );

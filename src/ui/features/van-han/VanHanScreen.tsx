@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Star } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useTranslation } from "react-i18next";
-import type { TuViData } from "@/domain/model/types";
+import type { NamTongLaSo as TuViData } from "@/domain/model/types";
 import { DaiHanCard } from "@/ui/features/van-han/components/DaiHanCard";
 import { TabSwitcher } from "@/ui/features/van-han/components/TabSwitcher";
 import { TieuHanCard } from "@/ui/features/van-han/components/TieuHanCard";

@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { NGU_HANH_NGAY, getDateStr, phanTichSaoNgay, tinhDiem } from "@/data/constants/ngu-hanh-ngay";
-import type { TuViData } from "@/domain/model/types";
+import type { NamTongLaSo as TuViData } from "@/domain/model/types";
 import { CautionCard } from "@/ui/features/ngay-mai/components/CautionCard";
 import { HeroCard } from "@/ui/features/ngay-mai/components/HeroCard";
 import { LuckySignsCard } from "@/ui/features/ngay-mai/components/LuckySignsCard";
@@ -23,7 +23,7 @@ export const NgayMaiScreen = ({ tuViData }: NgayMaiScreenProps) => {
 
   const duDoan      = useMemo(() => (tuViData as any)?.du_doan_ngay_mai, [tuViData]);
   const tieuHan     = useMemo(() => (tuViData as any)?.van_han?.tieu_han_hien_tai, [tuViData]);
-  const menhCuc     = useMemo(() => tuViData?.thong_tin_co_ban?.ngu_hanh_menh_cuc || "Moc", [tuViData]);
+  const menhCuc     = useMemo(() => tuViData?.banMenhHanh || "Moc", [tuViData]);
   const canChiNgay  = useMemo(() => duDoan?.can_chi_ngay || "Nham Than", [duDoan]);
   const nguHanhNgay = useMemo(() => duDoan?.ngu_hanh_ngay || "Kim", [duDoan]);
   const tuongSinh   = useMemo(() => duDoan?.tuong_sinh_khac_voi_menh || "trung hoa", [duDoan]);

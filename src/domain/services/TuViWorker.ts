@@ -1,11 +1,11 @@
-import { calculateTuVi } from "./TuViCalculator";
+import { calculateNamTong } from "./NamTongCalculator";
 
 self.onmessage = async (e: MessageEvent) => {
   const { input } = e.data;
   try {
-    const result = await calculateTuVi(input);
-    self.postMessage({ type: 'SUCCESS', result });
+    const result = calculateNamTong(input);
+    self.postMessage({ type: "SUCCESS", result });
   } catch (error: any) {
-    self.postMessage({ type: 'ERROR', error: error.message });
+    self.postMessage({ type: "ERROR", error: error.message });
   }
 };
